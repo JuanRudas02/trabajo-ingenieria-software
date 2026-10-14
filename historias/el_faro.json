@@ -1,0 +1,39 @@
+{
+  "titulo": "El faro",
+  "inicio": "F1",
+  "variables": {
+    "tiene_llave": false
+  },
+  "escenas": [
+    {
+      "id": "F1",
+      "texto": "Llegas al faro durante la tormenta. Junto a la puerta hay una caja de herramientas.",
+      "final": false,
+      "opciones": [
+        {"id": "revisar", "texto": "Revisar la caja", "destino": "F2", "condiciones": {}, "efectos": {"tiene_llave": true}},
+        {"id": "subir", "texto": "Ir directo a la puerta", "destino": "F2", "condiciones": {}, "efectos": {}}
+      ]
+    },
+    {
+      "id": "F2",
+      "texto": "La puerta del faro está cerrada con candado.",
+      "final": false,
+      "opciones": [
+        {"id": "abrir", "texto": "Abrir con la llave", "destino": "F3", "condiciones": {"tiene_llave": true}, "efectos": {}},
+        {"id": "esperar", "texto": "Esperar a que pase la tormenta", "destino": "F4", "condiciones": {}, "efectos": {}}
+      ]
+    },
+    {
+      "id": "F3",
+      "texto": "Enciendes la luz del faro y un barco encuentra el camino a puerto.",
+      "final": true,
+      "opciones": []
+    },
+    {
+      "id": "F4",
+      "texto": "Amanece. La tormenta pasó, pero el faro permaneció apagado toda la noche.",
+      "final": true,
+      "opciones": []
+    }
+  ]
+}
