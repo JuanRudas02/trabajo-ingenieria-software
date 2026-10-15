@@ -6,37 +6,47 @@ import sys
 from motor import ErrorContenido, Sesion, cargar_historia
 
 
-def preguntar_reinicio(entrada=input) -> bool:
+def menu_cierre(sesion: Sesion, entrada=input) -> str:
+    """Al final o en un bloqueo: 's' otra partida, 'n' salir, 'd' deshacer (si se puede)."""
+    validas = ("s", "n", "d") if sesion.puede_deshacer else ("s", "n")
+    texto = "¿Jugar otra partida? (s/n" + ("/d = deshacer última decisión" if sesion.puede_deshacer else "") + "): "
     while True:
-        r = entrada("¿Jugar otra partida? (s/n): ").strip().lower()
-        if r in ("s", "n"):
-            return r == "s"
-        print("Responda 's' o 'n'.")
+        r = entrada(texto).strip().lower()
+        if r in validas:
+            return r
+        print("Responda " + ", ".join(f"'{v}'" for v in validas) + ".")
 
 
 def jugar(sesion: Sesion, entrada=input) -> None:
     while True:
         esc = sesion.escena_actual
         print(f"\n[{esc.id}] {esc.texto}")
-        if sesion.terminada:
-            print("\n*** FIN DE LA HISTORIA ***")
-            if not preguntar_reinicio(entrada):
-                return
-            sesion.reiniciar()
-            continue
         opciones = sesion.opciones_disponibles()
-        if not opciones:
-            print("\n[BLOQUEO] Esta escena no tiene opciones habilitadas. Avise a la escritora: "
-                  f"revise las condiciones de la escena '{esc.id}'.")
-            if not preguntar_reinicio(entrada):
+        if sesion.terminada or not opciones:
+            if sesion.terminada:
+                print("\n*** FIN DE LA HISTORIA ***")
+            else:
+                print("\n[BLOQUEO] Esta escena no tiene opciones habilitadas. Avise a la escritora: "
+                      f"revise las condiciones de la escena '{esc.id}'.")
+            r = menu_cierre(sesion, entrada)
+            if r == "n":
                 return
-            sesion.reiniciar()
+            if r == "d":
+                print(sesion.deshacer().mensaje)
+            else:
+                sesion.reiniciar()
             continue
         for i, op in enumerate(opciones, 1):
             print(f"  {i}. {op.texto}")
-        sel = entrada("Elija un número: ").strip()
+        if sesion.puede_deshacer:
+            print("  d. Deshacer la última decisión")
+        sel = entrada("Elija una opción: ").strip().lower()
+        if sel == "d":
+            print(sesion.deshacer().mensaje)
+            continue
         if not sel.isdigit() or not 1 <= int(sel) <= len(opciones):
-            print(f"Entrada no válida: escriba un número entre 1 y {len(opciones)}.")
+            extra = " o 'd' para deshacer" if sesion.puede_deshacer else ""
+            print(f"Entrada no válida: escriba un número entre 1 y {len(opciones)}{extra}.")
             continue
         sesion.elegir(opciones[int(sel) - 1].id)
 
