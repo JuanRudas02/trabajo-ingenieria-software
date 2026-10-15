@@ -120,7 +120,7 @@ Evolución & Etiqueta \cod{v1.0}, análisis de impacto de la solicitud y \cod{v1
 % =====================================================================
 \section{Agilidad}
 % =====================================================================
-Usé un tablero Kanban con las columnas Por hacer, En curso, Revisión y Hecho. El tablero está en GitHub Projects, en el mismo repositorio; las capturas inicial y final están en el Anexo~\ref{anx:tablero}.
+Usé un tablero Kanban con las columnas Por hacer, En curso, Revisión y Hecho. El tablero está en GitHub Projects, vinculado al mismo repositorio, y cada elemento del backlog es un \textit{issue}; la captura del tablero está en el Anexo~\ref{anx:tablero}.
 
 \begin{tabularx}{\linewidth}{@{}llLll@{}}
 \toprule
@@ -618,12 +618,14 @@ RF13 & N03, N04 & CU09, Clases, Estados & \path{Sesion.deshacer}, \path{Instanta
 \end{longtable}
 }
 
-\section{Capturas del tablero}\label{anx:tablero}
-% Suban las imágenes al proyecto de Overleaf y quiten el % de las dos líneas siguientes:
-% \includegraphics[width=\linewidth]{tablero_inicial.png}
-% \includegraphics[width=\linewidth]{tablero_final.png}
-Tablero inicial: \pendiente{tablero\_inicial.png}
+\section{Captura del tablero}\label{anx:tablero}
+\setcounter{figure}{0}
+No se conservó una captura del estado inicial del tablero: los elementos del backlog se crearon en la columna Por hacer y avanzaron hasta Hecho a medida que se terminaron. La Figura~\ref{fig:tablero} muestra el tablero final. GitHub Projects muestra las columnas con los nombres de su plantilla Kanban: \textit{Ready} (Por hacer), \textit{In progress} (En curso), \textit{In review} (Revisión) y \textit{Done} (Hecho).
 
-Tablero final: \pendiente{tablero\_final.png}
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{tablero_final.png}
+\caption{Tablero final en GitHub Projects.}\label{fig:tablero}
+\end{figure}
 
 \end{document}
