@@ -104,13 +104,13 @@ El motor nunca escribe sobre los archivos de historia: el texto es del colectivo
 % =====================================================================
 \section{Proceso}
 % =====================================================================
-Trabajé con un proceso incremental. Hubo tres incrementos internos: \cod{v0.1} con el contenido y la validación, \cod{v0.2} con las reglas de la sesión y \cod{v1.0} con la consola y la integración. Después se hace \cod{v1.1} con la solicitud de cambio.
+Trabajamos con un proceso incremental. Hubo tres incrementos internos: \cod{v0.1} con el contenido y la validación, \cod{v0.2} con las reglas de la sesión y \cod{v1.0} con la consola y la integración. Después se hace \cod{v1.1} con la solicitud de cambio.
 
-Lo comparé con cascada. Cascada supone requisitos estables desde el principio, pero la guía anuncia un cambio a mitad de la ventana. Con un incremento funcional y probado en la hora 6, el cambio se aplica sobre algo que ya funciona; en cascada me encontraría con la implementación a medias.
+Lo comparamos con cascada. Cascada supone requisitos estables desde el principio, pero la guía anuncia un cambio a mitad de la ventana. Con un incremento funcional y probado en la hora 6, el cambio se aplica sobre algo que ya funciona; en cascada nos encontraríamos con la implementación a medias.
 
 \begin{tabularx}{\linewidth}{@{}lL@{}}
 \toprule
-Actividad & Cómo la realicé en esta entrega\\ \midrule
+Actividad & Cómo la realizamos en esta entrega\\ \midrule
 Especificación & RF atómicos con criterio de aceptación (sección~\ref{sec:req}), revisados con una lista de chequeo (atomicidad, verificabilidad y cobertura de N01 a N06) antes de programar.\\
 Desarrollo & Por incrementos. Cada criterio de aceptación se escribió primero como prueba en \cod{pytest}.\\
 Validación & Suite automatizada de 86 casos, más el recorrido manual de los tres finales y de la segunda historia.\\
@@ -120,7 +120,7 @@ Evolución & Etiqueta \cod{v1.0}, análisis de impacto de la solicitud y \cod{v1
 % =====================================================================
 \section{Agilidad}
 % =====================================================================
-Usé un tablero Kanban con las columnas Por hacer, En curso, Revisión y Hecho. El tablero está en GitHub Projects, vinculado al mismo repositorio, y cada elemento del backlog es un \textit{issue}; la captura del tablero está en el Anexo~\ref{anx:tablero}.
+Usamos un tablero Kanban con las columnas Por hacer, En curso, Revisión y Hecho. El tablero está en GitHub Projects, vinculado al mismo repositorio, y cada elemento del backlog es un \textit{issue}; la captura del tablero está en el Anexo~\ref{anx:tablero}.
 
 \begin{tabularx}{\linewidth}{@{}llLll@{}}
 \toprule
@@ -136,7 +136,7 @@ B8 & Alta & Solicitud de cambio de la hora 6: deshacer (RF13) & J. Rudas & Hecho
 \end{tabularx}
 
 \subsection{Prácticas}
-Apliqué dos prácticas. La primera fue limitar el trabajo en curso a una sola tarea a la vez en el tablero, para no tener varias piezas a medias cuando llegara el cambio. La segunda fue escribir las pruebas de los criterios de aceptación antes del código: CA01 a CA03 y U1 a U5 se convirtieron en pruebas que fallaban hasta que la funcionalidad estuvo lista. Descarté Scrum con sprints y ceremonias formales, porque en una ventana de 12 horas la planificación, la revisión y la retrospectiva de cada sprint cuestan más de lo que aportan.
+Aplicamos dos prácticas. La primera fue limitar el trabajo en curso a una sola tarea a la vez en el tablero, para no tener varias piezas a medias cuando llegara el cambio. La segunda fue escribir las pruebas de los criterios de aceptación antes del código: CA01 a CA03 y U1 a U5 se convirtieron en pruebas que fallaban hasta que la funcionalidad estuvo lista. Descartamos Scrum con sprints y ceremonias formales, porque en una ventana de 12 horas la planificación, la revisión y la retrospectiva de cada sprint cuestan más de lo que aportan.
 
 \subsection{Definición de terminado}
 Una tarea está terminada cuando su código está en la rama principal, todas las pruebas pasan, los requisitos y la matriz de trazabilidad están actualizados, pasó la lista de chequeo de revisión y el README sigue siendo correcto.
@@ -179,18 +179,18 @@ RNF03\newline Confiabilidad & Ninguna terminación no controlada con 1000 entrad
 
 \subsection{Preguntas y supuestos}
 \begin{enumerate}[label=P\arabic*.]
-  \item ¿Son obligatorios \cod{condiciones} y \cod{efectos} aunque estén vacíos? No obtuve respuesta durante la ventana. Supuesto: sí, porque el contrato los lista como campos de la opción; un mapa vacío se escribe \cod{\{\}}. Quedó documentado en el README.
+  \item ¿Son obligatorios \cod{condiciones} y \cod{efectos} aunque estén vacíos? No obtuvimos respuesta durante la ventana. Supuesto: sí, porque el contrato los lista como campos de la opción; un mapa vacío se escribe \cod{\{\}}. Quedó documentado en el README.
   \item ¿Qué se hace con campos que el contrato no menciona, por ejemplo notas de la escritora? Supuesto: se ignoran, porque no afectan las reglas y le facilitan el trabajo editorial.
-  \item ¿Puede repetirse el ID de una opción en escenas distintas? La guía responde que sí: la unicidad es dentro de la escena. Lo verifiqué con una prueba.
+  \item ¿Puede repetirse el ID de una opción en escenas distintas? La guía responde que sí: la unicidad es dentro de la escena. Lo verificamos con una prueba.
 \end{enumerate}
 
 \subsection{Conflicto sobre el retroceso}\label{sec:retroceso}
-La escritora quiere poder retroceder siempre y el diseñador quiere decisiones irreversibles. La pregunta de aclaración para el cliente es: ``Si se permite retroceder, ¿también deben deshacerse los efectos sobre las variables? ¿Hay escenas que el diseñador quiera marcar como irreversibles?''. Mientras no haya respuesta, el acuerdo provisional es que la primera versión no tiene retroceso: las decisiones son irreversibles y la única forma de volver es reiniciar. No dejé nada implementado a la espera de esa decisión. En la hora 6 el cliente resolvió el conflicto: el lector puede deshacer su última decisión, con todas sus consecuencias. Esa decisión reemplazó el acuerdo provisional y se implementó como RF13 (sección~\ref{sec:cambio}).
+La escritora quiere poder retroceder siempre y el diseñador quiere decisiones irreversibles. La pregunta de aclaración para el cliente es: ``Si se permite retroceder, ¿también deben deshacerse los efectos sobre las variables? ¿Hay escenas que el diseñador quiera marcar como irreversibles?''. Mientras no haya respuesta, el acuerdo provisional es que la primera versión no tiene retroceso: las decisiones son irreversibles y la única forma de volver es reiniciar. No dejamos nada implementado a la espera de esa decisión. En la hora 6 el cliente resolvió el conflicto: el lector puede deshacer su última decisión, con todas sus consecuencias. Esa decisión reemplazó el acuerdo provisional y se implementó como RF13 (sección~\ref{sec:cambio}).
 
 \subsection{Revisión cruzada}
-Al revisar los requisitos con la lista de chequeo encontré una ambigüedad. La primera redacción de RF04 decía ``mostrar las opciones válidas'', lo que no se podía verificar porque ``válidas'' también podía entenderse como ``bien escritas''. La corregí a ``cuyas condiciones son todas iguales al valor actual''. Esa corrección dejó ver un error frecuente: si se evalúa \cod{if variables[k]} en lugar de comparar igualdad, ``Activar sin verificar'' (que exige \cod{false}) nunca aparece. Agregué la prueba \cod{test\_U1\_condicion\_false\_se\_evalua\_por\_igualdad}.
+Al revisar los requisitos con la lista de chequeo encontramos una ambigüedad. La primera redacción de RF04 decía ``mostrar las opciones válidas'', lo que no se podía verificar porque ``válidas'' también podía entenderse como ``bien escritas''. La corregimos a ``cuyas condiciones son todas iguales al valor actual''. Esa corrección dejó ver un error frecuente: si se evalúa \cod{if variables[k]} en lugar de comparar igualdad, ``Activar sin verificar'' (que exige \cod{false}) nunca aparece. Agregamos la prueba \cod{test\_U1\_condicion\_false\_se\_evalua\_por\_igualdad}.
 
-También encontré un defecto en el cargador: el módulo \cod{json} de Python acepta claves repetidas en un objeto y se queda con la última sin avisar. Lo corregí con un \cod{object\_pairs\_hook} que rechaza las claves repetidas, con su prueba \cod{clave\_repetida}.
+También encontramos un defecto en el cargador: el módulo \cod{json} de Python acepta claves repetidas en un objeto y se queda con la última sin avisar. Lo corregimos con un \cod{object\_pairs\_hook} que rechaza las claves repetidas, con su prueba \cod{clave\_repetida}.
 
 % =====================================================================
 \section{Modelado}
@@ -227,7 +227,7 @@ El contenido se separó del motor para que la escritora pueda cambiar la histori
 % =====================================================================
 \section{Implementación y pruebas}
 % =====================================================================
-Usé Python 3.10 o superior (probado en 3.13) con interfaz de consola. Las bibliotecas son las de la biblioteca estándar (\cod{json}, \cod{dataclasses}, \cod{pathlib}, licencia PSF) y \cod{pytest} 9.1 (licencia MIT), solo para las pruebas.
+Usamos Python 3.10 o superior (probado en 3.13) con interfaz de consola. Las bibliotecas son las de la biblioteca estándar (\cod{json}, \cod{dataclasses}, \cod{pathlib}, licencia PSF) y \cod{pytest} 9.1 (licencia MIT), solo para las pruebas.
 
 \subsection{Decisión de diseño detallado}
 \cod{Sesion.elegir(id)} primero busca la opción en la escena actual y verifica que esté habilitada. Solo si las dos comprobaciones pasan crea un diccionario nuevo de variables con los efectos y cambia de escena. Así una entrada inválida nunca deja el estado a medias (U3) y la consola no puede saltarse la regla enviando el ID de una opción oculta (CA02). Las variables se entregan como copia para que nadie pueda modificar el estado desde fuera, y \cod{reiniciar()} crea una copia nueva de las variables iniciales; si se reutilizara el diccionario cargado del archivo, una partida dejaría rastros en la siguiente (N05). La regla de igualdad vive en \cod{Opcion}, que es la clase que tiene la información, y eso reduce el acoplamiento entre \cod{Sesion} y el formato de las condiciones.
@@ -268,7 +268,7 @@ Pruebas & Nuevo U6 en \cod{tests/test\_deshacer.py} (12 casos). U5 verifica que 
 Backlog & B8 dividido en: implementar \cod{deshacer} en la sesión, opción en la consola, pruebas U6/U5/I1, actualizar informe y trazabilidad. Todas en Hecho.\\ \bottomrule
 \end{tabularx}
 
-\textit{Decisión.} Como solo se exige un nivel, guardé una única \cod{Instantanea} (escena y copia de las variables) en lugar de una pila de historial. Se crea solo cuando una elección es válida, por eso una entrada inválida no la reemplaza; \cod{deshacer()} la restaura y la borra, lo que impide un segundo retroceso; \cod{reiniciar()} también la borra. El cambio quedó contenido en la capa de reglas y la interfaz, lo que confirma la separación elegida en la Decisión~1.
+\textit{Decisión.} Como solo se exige un nivel, guardamos una única \cod{Instantanea} (escena y copia de las variables) en lugar de una pila de historial. Se crea solo cuando una elección es válida, por eso una entrada inválida no la reemplaza; \cod{deshacer()} la restaura y la borra, lo que impide un segundo retroceso; \cod{reiniciar()} también la borra. El cambio quedó contenido en la capa de reglas y la interfaz, lo que confirma la separación elegida en la Decisión~1.
 
 \textit{Versión resultante.} Etiqueta \cod{v1.1}. El código del cambio está en los commits \cod{3e91243} (sesión), \cod{c61a898} (consola) y \cod{4c77be1} (pruebas). \textit{Evidencia:} 86 pruebas, todas pasan, incluido el ejemplo exacto de la solicitud (\cod{test\_U6\_ejemplo\_de\_la\_solicitud}); registro en \path{resultados/ultima_ejecucion.txt}.
 
@@ -279,7 +279,7 @@ La matriz del Anexo~\ref{anx:matriz} relaciona RF01 a RF12 y RNF01 a RNF03 con s
 
 El trabajo se presenta en pareja por \integranteA\ (\codigo) y \integranteB\ (\codigoB). \integranteB\ aportó en distintas actividades del parcial: el análisis de los requisitos, la revisión de los modelos, la verificación de las pruebas y la revisión del informe. Los commits del repositorio \url{\repo} están registrados a nombre de \integranteA.
 
-Fuentes y herramientas: documentación oficial de Python y de \cod{pytest}. Usé un asistente de IA (Claude, de Anthropic) para producir un primer borrador del código, las pruebas, los diagramas UML y este informe. Verifiqué los resultados ejecutando las 86 pruebas automatizadas, recorriendo a mano los tres finales y la segunda historia, y revisando cada sección del informe contra la guía del parcial.
+Fuentes y herramientas: documentación oficial de Python y de \cod{pytest}. Usamos un asistente de IA (Claude, de Anthropic) para producir un primer borrador del código, las pruebas, los diagramas UML y este informe. Verificamos los resultados ejecutando las 86 pruebas automatizadas, recorriendo a mano los tres finales y la segunda historia, y revisando cada sección del informe contra la guía del parcial.
 
 % =====================================================================
 %  ANEXOS
