@@ -21,7 +21,7 @@ pip install -r requirements.txt
 python jugar.py historias/la_ultima_transmision.json
 python jugar.py historias/el_faro.json          # segunda historia, mismo motor
 ```
-Se elige escribiendo el número de la opción. Al llegar a un final, el programa pregunta si se desea otra partida (`s`/`n`).
+Se elige escribiendo el número de la opción. Después de cualquier elección válida aparece la opción `d` para **deshacer la última decisión** (un solo nivel, versión 1.1). Al llegar a un final, el programa pregunta si se desea otra partida (`s`), salir (`n`) o deshacer (`d`).
 
 ## Pruebas
 ```bash
@@ -31,8 +31,9 @@ python -m pytest -v > resultados/ultima_ejecucion.txt
 | Archivo | Cubre |
 |---|---|
 | `tests/test_sesion.py` | U1, U2, U3, U5, CA01, CA02 |
+| `tests/test_deshacer.py` | U6 (deshacer, solicitud de cambio de la hora 6) |
 | `tests/test_validacion.py` | U4 (9 categorías de error), CA03, bloqueo en ejecución |
-| `tests/test_integracion.py` | I1 (tres finales con archivo real, consola de extremo a extremo, segunda historia) |
+| `tests/test_integracion.py` | I1 (tres finales con archivo real, deshacer desde cada final, consola de extremo a extremo, segunda historia) |
 | `tests/test_rnf.py` | RNF01, RNF02, RNF03 |
 
 ## Rutas para demostrar cada final (historia de referencia)
@@ -41,6 +42,8 @@ python -m pytest -v > resultados/ultima_ejecucion.txt
 | E4 Rescate | `1, 1, 1` | revisar → investigar → activar_codigo |
 | E5 El eco | `1, 2, 1` | revisar → continuar → activar_sin_verificar |
 | E6 Silencio | `1, 1, 2` o `1, 2, 2` | revisar → (investigar \| continuar) → cortar |
+
+Deshacer desde un final: ruta `1, 1, 2` (llega a E6), luego `d` → vuelve a E3 con las variables previas a cortar.
 
 Error de destino inexistente: copie la historia, cambie un `destino` por `E99` y ejecútela; el programa termina con código 1 y el mensaje
 `[DESTINO_INEXISTENTE] escena E3.opcion cortar.destino: el destino 'E99' no existe`.
@@ -58,6 +61,10 @@ Reglas: una opción se muestra solo si **todas** sus condiciones son iguales al 
 
 Para escribir una historia nueva: copie `historias/el_faro.json`, edítela y ejecútela con `python jugar.py <ruta>`. Si tiene errores, el programa los lista todos con su ubicación antes de empezar.
 
+## Versiones
+- `v1.0`: versión inicial, previa a la solicitud de cambio.
+- `v1.1`: deshacer la última decisión (RF13), pruebas U6 y extensiones de U5 e I1.
+
 ## Estructura
 ```
 motor/        modelo.py (dominio) · validador.py · cargador.py (contenido) · sesion.py (reglas) · errores.py
@@ -68,7 +75,7 @@ docs/         informe con anexos (main.tex para Overleaf y PDF)
 ```
 
 ## Limitaciones conocidas
-- No hay retroceso (acuerdo provisional, ver informe §4).
+- El retroceso es de un solo nivel y no existe rehacer (regla de la solicitud de cambio).
 - No se analiza estáticamente si todos los finales son alcanzables; los bloqueos se detectan durante la partida.
 - No se guarda la partida entre ejecuciones (fuera de alcance).
 
