@@ -45,7 +45,7 @@ def test_RNF02_claridad_cada_error_tiene_codigo_causa_y_ubicacion(datos_validos,
 def test_RNF03_confiabilidad_1000_entradas_aleatorias_sin_cierre_inesperado(capsys):
     """RNF03: 0 excepciones no controladas ante 1000 entradas aleatorias en consola."""
     rng = random.Random(2026)
-    alfabeto = ["", " ", "0", "1", "2", "3", "-1", "99", "abc", "1.5", "s", "ñ", "🙂", "\t"]
+    alfabeto = ["", " ", "0", "1", "2", "3", "-1", "99", "abc", "1.5", "s", "d", "D", "ñ", "🙂", "\t"]
     it = iter([rng.choice(alfabeto) for _ in range(1000)])
 
     def entrada(_):
@@ -64,7 +64,8 @@ def test_RNF03_estado_intacto_ante_1000_ids_invalidos():
     s = Sesion(cargar_historia(RUTA_TRANSMISION))
     rng = random.Random(7)
     for _ in range(1000):
-        antes = (s.escena_actual.id, s.variables)
-        intento = rng.choice(["activar_codigo", "x", "", "E2", "cortar ", "REVISAR"])
-        if not s.elegir(intento).aceptada:
-            assert (s.escena_actual.id, s.variables) == antes
+        antes = (s.escena_actual.id, s.variables, s.puede_deshacer)
+        intento = rng.choice(["activar_codigo", "x", "", "E2", "cortar ", "REVISAR", "<deshacer>"])
+        r = s.deshacer() if intento == "<deshacer>" else s.elegir(intento)
+        if not r.aceptada:
+            assert (s.escena_actual.id, s.variables, s.puede_deshacer) == antes

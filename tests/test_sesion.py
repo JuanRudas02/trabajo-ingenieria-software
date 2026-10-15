@@ -95,6 +95,17 @@ def test_U5_reiniciar_restaura_estado_inicial(sesion):
     assert ids(sesion.opciones_disponibles()) == ["activar_sin_verificar", "cortar"]
 
 
+def test_U5_reiniciar_elimina_el_historial_de_retroceso(sesion):
+    sesion.elegir("revisar"); sesion.elegir("investigar")
+    assert sesion.puede_deshacer
+    sesion.reiniciar()
+    assert sesion.puede_deshacer is False
+    r = sesion.deshacer()
+    assert r.aceptada is False
+    assert sesion.escena_actual.id == "E1"
+    assert sesion.variables == {"conoce_origen": False, "confia_en_la_voz": False}
+
+
 def test_U5_dos_sesiones_no_comparten_estado(sesion):
     from motor import cargar_historia
     from tests.conftest import RUTA_TRANSMISION
