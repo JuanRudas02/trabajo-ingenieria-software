@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from .modelo import Escena, Historia, Opcion
 
@@ -11,6 +11,13 @@ from .modelo import Escena, Historia, Opcion
 class ResultadoEleccion:
     aceptada: bool
     mensaje: str
+
+
+@dataclass(frozen=True)
+class Instantanea:
+    """Estado guardado justo antes de la última elección válida (para deshacer)."""
+    id_escena: str
+    variables: Dict[str, bool]
 
 
 class Sesion:
@@ -38,6 +45,10 @@ class Sesion:
         """Escena no final sin ninguna opción habilitada (detectado en ejecución)."""
         return not self.terminada and not self.opciones_disponibles()
 
+    @property
+    def puede_deshacer(self) -> bool:
+        return self._anterior is not None
+
     def opciones_disponibles(self) -> List[Opcion]:
         return [o for o in self.escena_actual.opciones if o.habilitada(self._variables)]
 
@@ -53,10 +64,22 @@ class Sesion:
             return ResultadoEleccion(False, f"La opción '{id_opcion}' no está disponible ahora.")
         nuevas = dict(self._variables)
         nuevas.update(opcion.efectos)
+        # Solo una elección válida reemplaza el historial (un único nivel).
+        self._anterior = Instantanea(self._id_escena, dict(self._variables))
         self._variables = nuevas
         self._id_escena = opcion.destino
         return ResultadoEleccion(True, opcion.texto)
 
+    def deshacer(self) -> ResultadoEleccion:
+        """Restaura escena y variables previas a la última elección válida y consume el retroceso."""
+        if self._anterior is None:
+            return ResultadoEleccion(False, "No hay ninguna decisión que deshacer.")
+        self._id_escena = self._anterior.id_escena
+        self._variables = dict(self._anterior.variables)
+        self._anterior = None
+        return ResultadoEleccion(True, "Se deshizo la última decisión.")
+
     def reiniciar(self) -> None:
         self._id_escena = self._historia.inicio
         self._variables = dict(self._historia.variables_iniciales)  # copia nueva, sin restos
+        self._anterior: Optional[Instantanea] = None  # el reinicio elimina el historial
