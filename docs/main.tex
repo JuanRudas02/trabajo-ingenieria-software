@@ -84,7 +84,7 @@ Un colectivo de escritores quiere publicar una historia interactiva para un fest
 
 Los actores son la escritora, que crea y corrige los archivos; el lector, que juega; el diseñador de la experiencia, que define condiciones y consecuencias; y la coordinadora del festival, que no acepta cierres inesperados del programa. La Figura~\ref{fig:contexto} muestra el contexto.
 
-El alcance de la primera versión incluye cargar historias en JSON, validarlas antes de jugar, mostrar escenas y opciones condicionadas, aplicar efectos booleanos, detectar finales y bloqueos, y reiniciar. Quedan por fuera el retroceso (ver sección~\ref{sec:retroceso}), las cuentas de usuario, la base de datos, el guardado entre ejecuciones, la red, el editor visual, los elementos multimedia y cualquier lenguaje de expresiones.
+El alcance de la primera versión incluye cargar historias en JSON, validarlas antes de jugar, mostrar escenas y opciones condicionadas, aplicar efectos booleanos, detectar finales y bloqueos, y reiniciar. Desde la versión \cod{v1.1} incluye además deshacer la última decisión (sección~\ref{sec:cambio}). Quedan por fuera rehacer, el retroceso de varios niveles, las cuentas de usuario, la base de datos, el guardado entre ejecuciones, la red, el editor visual, los elementos multimedia y cualquier lenguaje de expresiones.
 
 \subsection{Riesgos}
 \begin{enumerate}[label=R\arabic*.]
@@ -110,7 +110,7 @@ Lo comparé con cascada. Cascada supone requisitos estables desde el principio, 
 Actividad & Cómo la realicé en esta entrega\\ \midrule
 Especificación & RF atómicos con criterio de aceptación (sección~\ref{sec:req}), revisados con una lista de chequeo (atomicidad, verificabilidad y cobertura de N01 a N06) antes de programar.\\
 Desarrollo & Por incrementos. Cada criterio de aceptación se escribió primero como prueba en \cod{pytest}.\\
-Validación & Suite automatizada de 69 casos, más el recorrido manual de los tres finales y de la segunda historia.\\
+Validación & Suite automatizada de 86 casos, más el recorrido manual de los tres finales y de la segunda historia.\\
 Evolución & Etiqueta \cod{v1.0}, análisis de impacto de la solicitud y \cod{v1.1} con la trazabilidad actualizada (sección~\ref{sec:cambio}).\\ \bottomrule
 \end{tabularx}
 
@@ -129,7 +129,7 @@ B4 & Alta & Finales, reinicio y bloqueo (RF09, RF10, RF12) & J. Rudas & Hecho\\
 B5 & Media & Consola y entradas inválidas (RF03, RF07) & J. Rudas & Hecho\\
 B6 & Media & Segunda historia y pruebas de RNF & J. Rudas & Hecho\\
 B7 & Media & Requisitos, modelos, arquitectura e informe & J. Rudas & Hecho\\
-B8 & Alta & Solicitud de cambio de la hora 6 & J. Rudas & \pendiente{estado}\\ \bottomrule
+B8 & Alta & Solicitud de cambio de la hora 6: deshacer (RF13) & J. Rudas & Hecho\\ \bottomrule
 \end{tabularx}
 
 \subsection{Prácticas}
@@ -160,7 +160,8 @@ RF08 & N04 & Conservar el valor de las variables durante toda la partida. & El e
 RF09 & N05 & Informar el desenlace al llegar a una escena con \cod{final = true}. & Al llegar a E4, E5 o E6 se muestra ``FIN DE LA HISTORIA''.\\
 RF10 & N05 & Reiniciar restaurando la escena y las variables iniciales, sin datos de la partida anterior. & Después de terminar en E4 y reiniciar, en E3 sin investigar aparece ``Activar sin verificar''.\\
 RF11 & N06 & Validar el archivo antes de crear la partida y, si tiene errores, rechazarlo listando cada uno con su categoría, causa y campo o ID. & CA03: con un destino E99 no se abre la partida y se muestra \cod{[DESTINO\_INEXISTENTE] escena E3.opcion cortar.destino}.\\
-RF12 & N06 & Informar un bloqueo cuando una escena no final no tiene opciones habilitadas, y ofrecer reiniciar. & Con una historia cuya E3 solo tiene ``activar\_codigo'', al llegar sin investigar se muestra ``[BLOQUEO]'' y se ofrece reiniciar.\\ \bottomrule
+RF12 & N06 & Informar un bloqueo cuando una escena no final no tiene opciones habilitadas, y ofrecer reiniciar. & Con una historia cuya E3 solo tiene ``activar\_codigo'', al llegar sin investigar se muestra ``[BLOQUEO]'' y se ofrece reiniciar.\\
+RF13 & N03, N04 & Deshacer la última elección válida, restaurando exactamente la escena y las variables previas a ella; un solo nivel, disponible también desde un final y eliminado al reiniciar. & Desde E2, ``investigar'' lleva a E3 con \cod{conoce\_origen = true}; deshacer vuelve a E2 con \cod{false}; un segundo deshacer no cambia nada; al elegir ``continuar'', E3 muestra ``Activar sin verificar'' y ``Cortar comunicación''.\\ \bottomrule
 \end{longtable}}
 
 \subsection{Requisitos no funcionales}
@@ -181,7 +182,7 @@ RNF03\newline Confiabilidad & Ninguna terminación no controlada con 1000 entrad
 \end{enumerate}
 
 \subsection{Conflicto sobre el retroceso}\label{sec:retroceso}
-La escritora quiere poder retroceder siempre y el diseñador quiere decisiones irreversibles. La pregunta de aclaración para el cliente es: ``Si se permite retroceder, ¿también deben deshacerse los efectos sobre las variables? ¿Hay escenas que el diseñador quiera marcar como irreversibles?''. Mientras no haya respuesta, el acuerdo provisional es que la primera versión no tiene retroceso: las decisiones son irreversibles y la única forma de volver es reiniciar. No dejé nada implementado a la espera de esa decisión.
+La escritora quiere poder retroceder siempre y el diseñador quiere decisiones irreversibles. La pregunta de aclaración para el cliente es: ``Si se permite retroceder, ¿también deben deshacerse los efectos sobre las variables? ¿Hay escenas que el diseñador quiera marcar como irreversibles?''. Mientras no haya respuesta, el acuerdo provisional es que la primera versión no tiene retroceso: las decisiones son irreversibles y la única forma de volver es reiniciar. No dejé nada implementado a la espera de esa decisión. En la hora 6 el cliente resolvió el conflicto: el lector puede deshacer su última decisión, con todas sus consecuencias. Esa decisión reemplazó el acuerdo provisional y se implementó como RF13 (sección~\ref{sec:cambio}).
 
 \subsection{Revisión cruzada}
 Al revisar los requisitos con la lista de chequeo encontré una ambigüedad. La primera redacción de RF04 decía ``mostrar las opciones válidas'', lo que no se podía verificar porque ``válidas'' también podía entenderse como ``bien escritas''. La corregí a ``cuyas condiciones son todas iguales al valor actual''. Esa corrección dejó ver un error frecuente: si se evalúa \cod{if variables[k]} en lugar de comparar igualdad, ``Activar sin verificar'' (que exige \cod{false}) nunca aparece. Agregué la prueba \cod{test\_U1\_condicion\_false\_se\_evalua\_por\_igualdad}.
@@ -194,10 +195,10 @@ También encontré un defecto en el cargador: el módulo \cod{json} de Python ac
 Los diagramas están en el Anexo~\ref{anx:uml} y usan los mismos nombres que el código (\cod{Historia}, \cod{Escena}, \cod{Opcion}, \cod{Sesion}, \cod{condiciones}, \cod{efectos}).
 \begin{itemize}
   \item Contexto (Figura~\ref{fig:contexto}): el motor es una aplicación local y su único sistema externo es el archivo de historia.
-  \item Casos de uso (Figura~\ref{fig:cu}): CU01 a CU08, relacionados con RF01 a RF12. No hay caso de uso para retroceder.
+  \item Casos de uso (Figura~\ref{fig:cu}): CU01 a CU09, relacionados con RF01 a RF13. CU09 (Deshacer última decisión) se agregó con la solicitud de cambio.
   \item Clases (Figura~\ref{fig:clases}): las clases del dominio son inmutables y \cod{Sesion} es la única con estado que cambia. La regla de igualdad está en \cod{Opcion.habilitada()}.
   \item Secuencia (Figura~\ref{fig:secuencia}): elegir una opción. La consola convierte el número en un ID y la sesión vuelve a validar antes de aplicar los efectos.
-  \item Estados (Figura~\ref{fig:estados}): Cargando, Rechazada, EnEscena, Bloqueada y Terminada. Las elecciones inválidas son transiciones al mismo estado, sin efectos.
+  \item Estados (Figura~\ref{fig:estados}): Cargando, Rechazada, EnEscena, Bloqueada y Terminada. Las elecciones inválidas son transiciones al mismo estado, sin efectos. La versión \cod{v1.1} agrega la transición \cod{deshacer()} desde EnEscena, Terminada y Bloqueada.
 \end{itemize}
 El mapa narrativo (Figura~\ref{fig:mapa}) describe los datos de la historia; no reemplaza los modelos del software.
 
@@ -237,31 +238,36 @@ U1 & E3 con \cod{conoce\_origen} verdadero o falso: [activar\_codigo, cortar] o 
 U2 & ``investigar'' en E2: pasa a E3 con \cod{conoce\_origen = true} & \cod{test\_sesion::test\_U2\_*} y \cod{test\_CA01}, pasan\\
 U3 & Seis entradas inválidas (inexistente, de otra escena, no habilitada, en un final, vacía): estado igual & \cod{test\_sesion::test\_U3\_*}, 6 casos, pasan\\
 U4 & 22 archivos con errores: \cod{ErrorContenido} con categoría y ubicación & \cod{test\_validacion::test\_U4\_*}, 22 casos, pasan\\
-U5 & Terminar en E4 y reiniciar: E1 con variables iniciales & \cod{test\_sesion::test\_U5\_*}, 2 casos, pasan\\
-I1 & Archivo real hasta E4, E5 y E6; consola con entradas inválidas y reinicio & \cod{test\_integracion::test\_I1\_*}, 4 casos, pasan\\ \bottomrule
+U5 & Terminar en E4 y reiniciar: E1 con variables iniciales y sin historial de retroceso & \cod{test\_sesion::test\_U5\_*}, 3 casos, pasan\\
+U6 & Deshacer: restaura escena y variables, consume el retroceso, no existe al inicio, la entrada inválida preserva el historial y una nueva elección lo habilita & \cod{test\_deshacer::test\_U6\_*}, 12 casos, pasan\\
+I1 & Archivo real hasta E4, E5 y E6; deshacer desde cada final; consola con entradas inválidas, deshacer y reinicio & \cod{test\_integracion::test\_I1\_*}, 8 casos, pasan\\ \bottomrule
 \end{tabularx}}
 
 Las pruebas de validación cubren las nueve categorías de error: archivo ilegible o con estructura incorrecta, campo obligatorio ausente, inicio inexistente, ID repetido (de escena, o de opción dentro de su escena), destino inexistente, variable no declarada, valor no booleano, cantidad de opciones incompatible con \cod{final}, y bloqueo durante la partida (\cod{test\_bloqueo\_en\_ejecucion\_*}).
 
 \subsection{Verificación del producto}
-Los tres finales se alcanzan con las rutas que indica el README, \cod{el\_faro.json} se juega hasta sus dos finales y los tres RNF se cumplen. En la última ejecución pasaron las 69 pruebas, sin fallos (\path{resultados/ultima_ejecucion.txt}). No hay fallos pendientes conocidos; las limitaciones están en el README.
+Los tres finales se alcanzan con las rutas que indica el README, \cod{el\_faro.json} se juega hasta sus dos finales y los tres RNF se cumplen. En la última ejecución (versión \cod{v1.1}) pasaron las 86 pruebas, sin fallos (\path{resultados/ultima_ejecucion.txt}). No hay fallos pendientes conocidos; las limitaciones están en el README.
 
 % =====================================================================
 \section{Gestión del cambio}\label{sec:cambio}
 % =====================================================================
-Versión de partida: etiqueta \cod{v1.0}, commit \pendiente{hash}. Solicitud recibida: \pendiente{resumen de la solicitud publicada en la hora 6}.
+\textit{Versión de partida.} Etiqueta \cod{v1.0}, commit \cod{c452199}, con 69 pruebas en verde.
+
+\textit{Solicitud.} El cliente decidió que el lector pueda deshacer su última decisión y que se reviertan todas sus consecuencias, lo que reemplaza el acuerdo provisional de la sección~\ref{sec:retroceso}. Reglas: restaurar exactamente la escena y las variables anteriores a la última elección válida; un solo nivel, sin rehacer; sin retroceso al comenzar y con el historial eliminado al reiniciar; una entrada inválida no modifica la sesión ni el historial; se puede deshacer desde E4, E5 o E6.
 
 \begin{tabularx}{\linewidth}{@{}lL@{}}
 \toprule
 Artefacto & Impacto\\ \midrule
-Requisitos & \pendiente{RF nuevos o modificados y sus criterios de aceptación}\\
-Modelos & \pendiente{figuras actualizadas}\\
-Componentes & \pendiente{archivos modificados}\\
-Pruebas & \pendiente{escenario U6 y casos extendidos}\\
-Backlog & B8 y \pendiente{subtareas}\\ \bottomrule
+Requisitos & Nuevo RF13 con su criterio de aceptación (sección~\ref{sec:req}). RF07 y RF10 se amplían: una entrada inválida conserva el historial y reiniciar lo elimina. La sección~\ref{sec:retroceso} registra la decisión del cliente.\\
+Modelos & Casos de uso: nuevo CU09. Clases: \cod{Sesion.deshacer()}, \cod{puede\_deshacer} y la clase \cod{Instantanea}. Estados: transición \cod{deshacer()} desde EnEscena, Terminada y Bloqueada.\\
+Componentes & \cod{motor/sesion.py} (la sesión guarda una \cod{Instantanea} antes de cada elección válida y la consume al deshacer), \cod{jugar.py} (opción \cod{d}, también en el menú de un final o de un bloqueo). El cargador, el validador, el modelo y los archivos de historia no cambian.\\
+Pruebas & Nuevo U6 en \cod{tests/test\_deshacer.py} (12 casos). U5 verifica que reiniciar elimina el historial. I1 deshace desde E4, E5 y E6 con el archivo real y por consola. RNF03 incluye deshacer entre las 1000 acciones aleatorias.\\
+Backlog & B8 dividido en: implementar \cod{deshacer} en la sesión, opción en la consola, pruebas U6/U5/I1, actualizar informe y trazabilidad. Todas en Hecho.\\ \bottomrule
 \end{tabularx}
 
-Versión resultante: \cod{v1.1}, commit \pendiente{hash}. Evidencia: \pendiente{pruebas y resultado}.
+\textit{Decisión.} Como solo se exige un nivel, guardé una única \cod{Instantanea} (escena y copia de las variables) en lugar de una pila de historial. Se crea solo cuando una elección es válida, por eso una entrada inválida no la reemplaza; \cod{deshacer()} la restaura y la borra, lo que impide un segundo retroceso; \cod{reiniciar()} también la borra. El cambio quedó contenido en la capa de reglas y la interfaz, lo que confirma la separación elegida en la Decisión~1.
+
+\textit{Versión resultante.} Etiqueta \cod{v1.1}. El código del cambio está en los commits \cod{3e91243} (sesión), \cod{c61a898} (consola) y \cod{4c77be1} (pruebas). \textit{Evidencia:} 86 pruebas, todas pasan, incluido el ejemplo exacto de la solicitud (\cod{test\_U6\_ejemplo\_de\_la\_solicitud}); registro en \path{resultados/ultima_ejecucion.txt}.
 
 % =====================================================================
 \section{Trazabilidad, autoría y fuentes}\label{sec:fuentes}
@@ -270,7 +276,7 @@ La matriz del Anexo~\ref{anx:matriz} relaciona RF01 a RF12 y RNF01 a RNF03 con s
 
 El trabajo es individual. \pendiente{confirmar con el docente que el parcial puede presentarse sin pareja y citar aquí su autorización} Todas las tareas del backlog (B1 a B8) y todos los commits del repositorio \url{\repo} son de \integranteA.
 
-Fuentes y herramientas: documentación oficial de Python y de \cod{pytest}. Usé un asistente de IA (Claude, de Anthropic) para producir un primer borrador del código, las pruebas, los diagramas UML y este informe. Verifiqué los resultados ejecutando las 69 pruebas automatizadas, recorriendo a mano los tres finales y la segunda historia, y revisando cada sección del informe contra la guía del parcial.
+Fuentes y herramientas: documentación oficial de Python y de \cod{pytest}. Usé un asistente de IA (Claude, de Anthropic) para producir un primer borrador del código, las pruebas, los diagramas UML y este informe. Verifiqué los resultados ejecutando las 86 pruebas automatizadas, recorriendo a mano los tres finales y la segunda historia, y revisando cada sección del informe contra la guía del parcial.
 
 % =====================================================================
 %  ANEXOS
@@ -336,7 +342,7 @@ Fuentes y herramientas: documentación oficial de Python y de \cod{pytest}. Usé
       \node[font=\small,below] at (0,-0.5) {#2};
       \coordinate (#3) at (0.35,0.1);
     \end{scope}}
-  \node[draw,thick,minimum width=10.4cm,minimum height=9.4cm,anchor=north] (sys) at (0,4.7) {};
+  \node[draw,thick,minimum width=10.4cm,minimum height=11.2cm,anchor=north] (sys) at (0,4.7) {};
   \node[font=\small\bfseries,anchor=north] at (sys.north) {Motor de historias interactivas};
 
   \node[cu] (u1) at (-2.4,3.4) {CU01 Cargar historia};
@@ -347,19 +353,20 @@ Fuentes y herramientas: documentación oficial de Python y de \cod{pytest}. Usé
   \node[cu] (u6) at (2.6,-2.0) {CU06 Aplicar efectos\\y avanzar};
   \node[cu] (u7) at (-2.4,-3.8) {CU07 Reiniciar partida};
   \node[cu] (u8) at (2.6,-0.2) {CU08 Informar\\bloqueo};
+  \node[cu] (u9) at (-2.4,-5.6) {CU09 Deshacer última\\decisión};
 
   \actorfig{-7.4,2.6}{Escritora}{aE}
   \actorfig{-7.4,-1.6}{Lector}{aL}
 
   \draw (aE) -- (u1.west);
-  \draw (aL) -- (u3.west); \draw (aL) -- (u4.west); \draw (aL) -- (u5.west); \draw (aL) -- (u7.west);
+  \draw (aL) -- (u3.west); \draw (aL) -- (u4.west); \draw (aL) -- (u5.west); \draw (aL) -- (u7.west); \draw (aL) -- (u9.west);
   \draw[rel] (u1) -- node[lbl,above]{\guillemotleft include\guillemotright} (u2);
   \draw[rel] (u3) -- node[lbl,right]{\guillemotleft include\guillemotright} (u1);
   \draw[rel] (u5) -- node[lbl,above]{\guillemotleft include\guillemotright} (u6);
   \draw[rel] (u8) -- node[lbl,above]{\guillemotleft extend\guillemotright} (u4);
 \end{tikzpicture}
 }
-\caption{Diagrama de casos de uso de la primera versión.}\label{fig:cu}
+\caption{Diagrama de casos de uso (versión v1.1, con CU09).}\label{fig:cu}
 \end{figure}
 
 \begin{figure}[H]\centering
@@ -392,13 +399,21 @@ Fuentes y herramientas: documentación oficial de Python y de \cod{pytest}. Usé
   \begin{class}[text width=6.0cm]{Sesion}{7.6,0}
     \attribute{- \_id\_escena : str}
     \attribute{- \_variables : dict[str, bool]}
+    \attribute{- \_anterior : Instantanea [0..1]}
     \operation{+ escena\_actual() : Escena}
     \operation{+ variables() : dict \{copia\}}
     \operation{+ terminada() : bool}
     \operation{+ bloqueada() : bool}
+    \operation{+ puede\_deshacer() : bool}
     \operation{+ opciones\_disponibles() : list[Opcion]}
     \operation{+ elegir(id : str) : ResultadoEleccion}
+    \operation{+ deshacer() : ResultadoEleccion}
     \operation{+ reiniciar() : void}
+  \end{class}
+
+  \begin{class}[text width=4.4cm]{Instantanea}{13.2,-7.6}
+    \attribute{+ id\_escena : str}
+    \attribute{+ variables : dict[str, bool]}
   \end{class}
 
   \begin{class}[text width=3.8cm]{ResultadoEleccion}{7.6,-6.4}
@@ -434,6 +449,7 @@ Fuentes y herramientas: documentación oficial de Python y de \cod{pytest}. Usé
   \composition{Escena}{opciones}{0..*}{Opcion}
   \unidirectionalAssociation{Sesion}{historia}{1}{Historia}
   \draw[umlcd style dashed line,->] (Sesion) -- node[right,font=\scriptsize]{\guillemotleft create\guillemotright} (ResultadoEleccion);
+  \composition{Sesion}{anterior}{0..1}{Instantanea}
   \aggregation{ErrorContenido}{errores}{1..*}{ErrorValidacion}
   \draw[umlcd style dashed line,->] (Cargador) |- node[pos=0.25,left,font=\scriptsize]{\guillemotleft create\guillemotright} (Historia.west);
   \draw[umlcd style dashed line,->] (Cargador) -- node[right,font=\scriptsize]{\guillemotleft use\guillemotright} (Validador);
@@ -464,7 +480,7 @@ Fuentes y herramientas: documentación oficial de Python y de \cod{pytest}. Usé
         \end{call}
         \begin{call}{ses}{habilitada(vars)}{opc}{true}
         \end{call}
-        \begin{callself}{ses}{aplicar efectos; escena = destino}{}
+        \begin{callself}{ses}{guardar instantánea; aplicar efectos; escena = destino}{}
         \end{callself}
       \end{call}
     \end{sdblock}
@@ -496,13 +512,14 @@ Fuentes y herramientas: documentación oficial de Python y de \cod{pytest}. Usé
 
   \draw[tr] ($(jug.north)+(-0.6,0)$) .. controls +(-0.6,1.4) and +(0.6,1.4) .. ($(jug.north)+(0.6,0)$)
      node[lbl,pos=0.5,above]{elegir(id) [válida, destino no final] / aplicar efectos\\
-                             elegir(id) [inexistente o no habilitada] / estado intacto};
+                             elegir(id) [inexistente o no habilitada] / estado intacto\\
+                             deshacer() [hay instantánea] / restaurar escena y variables};
 
   \draw[tr] ($(jug.east)+(0,0.25)$) -- node[lbl,above]{elegir(id) [destino final]} ($(fin.west)+(0,0.25)$);
-  \draw[tr] ($(fin.west)+(0,-0.25)$) -- node[lbl,below]{reiniciar()} ($(jug.east)+(0,-0.25)$);
+  \draw[tr] ($(fin.west)+(0,-0.25)$) -- node[lbl,below]{reiniciar() o deshacer()} ($(jug.east)+(0,-0.25)$);
 
   \draw[tr] ($(jug.south)+(-0.5,0)$) -- node[lbl,left]{[ninguna opción\\habilitada]} ($(bloq.north)+(-0.5,0)$);
-  \draw[tr] ($(bloq.north)+(0.5,0)$) -- node[lbl,right]{reiniciar()} ($(jug.south)+(0.5,0)$);
+  \draw[tr] ($(bloq.north)+(0.5,0)$) -- node[lbl,right]{reiniciar()\\o deshacer()} ($(jug.south)+(0.5,0)$);
 
   \draw[tr] (fin) -- node[lbl,right]{salir (n)} (sal);
   \draw[tr] (bloq) -- node[lbl,below]{salir (n)} (sal);
@@ -584,16 +601,16 @@ RF03 & N02 & CU04, Secuencia & \path{jugar.py}, \path{Sesion.escena_actual} & \p
 RF04 & N02 & CU04, Secuencia, Clases & \path{Opcion.habilitada}, \path{Sesion.opciones_disponibles} & \path{test_sesion.py::test_U1_*}, \path{::test_CA01}\\
 RF05 & N03 & CU06, Secuencia, Estados & \path{Sesion.elegir} & \path{test_sesion.py::test_U2_eleccion_valida_aplica_efectos_y_avanza}\\
 RF06 & N03 & CU06, Secuencia, Estados & \path{Sesion.elegir} & \path{test_sesion.py::test_U2_*}, \path{::test_CA02_*}\\
-RF07 & N03 & CU05, Estados & \path{Sesion.elegir}, \path{jugar.py} & \path{test_sesion.py::test_U3_*} (6 variantes), \path{test_rnf.py::test_RNF03_*}\\
+RF07 & N03 & CU05, Estados & \path{Sesion.elegir}, \path{jugar.py} & \path{test_sesion.py::test_U3_*} (6 variantes), \path{test_deshacer.py::test_U6_entrada_invalida_*}, \path{test_rnf.py::test_RNF03_*}\\
 RF08 & N04 & Clases, Estados & \path{Sesion._variables} & \path{test_integracion.py::test_I1_*} (variables finales por ruta)\\
 RF09 & N05 & CU04, Estados & \path{Sesion.terminada}, \path{jugar.py} & \path{test_integracion.py::test_I1_*} (E4, E5, E6)\\
-RF10 & N05 & CU07, Estados & \path{Sesion.reiniciar} & \path{test_sesion.py::test_U5_*} (2 pruebas)\\
+RF10 & N05 & CU07, Estados & \path{Sesion.reiniciar} & \path{test_sesion.py::test_U5_*} (3 pruebas)\\
 RF11 & N06 & CU02, Clases, Comp. & \path{motor/validador.py}, \path{errores.py} & \path{test_validacion.py::test_U4_*} (22 variantes), \path{::test_CA03_*}\\
 RF12 & N06 & CU08, Estados & \path{Sesion.bloqueada}, \path{jugar.py} & \path{test_validacion.py::test_bloqueo_en_ejecucion_*}\\
 RNF01 & --- & Componentes & \path{motor/*} vs.\ \path{historias/el_faro.json} & \path{test_rnf.py::test_RNF01_*}; \path{test_integracion.py::test_segunda_historia_*}\\
 RNF02 & --- & Clases (ErrorValidacion) & \path{motor/validador.py} & \path{test_rnf.py::test_RNF02_*} (18 casos)\\
 RNF03 & --- & Estados & \path{motor/sesion.py}, \path{jugar.py} & \path{test_rnf.py::test_RNF03_*} (2 pruebas, 2000 entradas)\\
-RF-C1 & \multicolumn{4}{l}{\pendiente{filas de la solicitud de cambio}}\\
+RF13 & N03, N04 & CU09, Clases, Estados & \path{Sesion.deshacer}, \path{Instantanea}, \path{jugar.py} & \path{test_deshacer.py::test_U6_*} (12); \path{test_sesion.py::test_U5_reiniciar_elimina_el_historial_de_retroceso}; \path{test_integracion.py::test_I1_deshacer_*}, \path{::test_I1_consola_deshacer_desde_final}\\
 \bottomrule
 \end{longtable}
 }
